@@ -1,93 +1,106 @@
 [![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
 
-# enterprise-service-bus
-This is a [Moleculer](https://moleculer.services/)-based microservices project. Generated with the [Moleculer CLI](https://moleculer.services/docs/0.14/moleculer-cli.html).
+# Enterprise Service Bus
 
-## Описание веток
-В проекте ветки делятся на 3 типа
-- отдельные ветки под задачи в Jira (именуются согласно задачам: CB-100, CB-101 и тд.)
-- test ветка с автодеплоем в тестовую среду
-- master ветка с автодеплоем в продовую среду
+A company-wide integration backbone that keeps dozens of business systems in sync
+in real time. ERP, CRM, e-commerce, marketing, logistics, and analytics platforms
+don't talk to each other directly — they publish and consume events on this bus,
+which transforms, routes, and reconciles data between them.
 
-## Описание локального запуска
-Шину можно запускать локально для тестирования или внесения изменений. Для этого используются файлы с переменными окружения .prod.env (только в экстренных случаях) и .test.env, стандартно используется .test.env.
-Env файлы имеют вид:
+Built as an **event-driven microservices** platform on
+[Moleculer](https://moleculer.services/) and **Apache Kafka**, it runs on
+**Kubernetes** with GitLab CI/CD and full observability. It's the kind of
+mission-critical, always-on system where a single dropped order or a stale
+inventory count is a real business problem — so reliability, idempotency, and
+traceability are first-class concerns, not afterthoughts.
+
+## What it does
+
+The bus is the single integration point between systems that were never designed
+to work together. A change in one platform (a new order, an updated client, a
+fresh inventory level) becomes a Kafka event that the relevant services pick up,
+transform into each target system's format, and deliver — with retries, dedup,
+and end-to-end logging.
+
+Integrated domains (40+ services) include:
+
+- **ERP / 1C** — orders, realizations, clients, inventory, BOM, cross-company (DZO) flows
+- **CRM** — clients, contacts, leads, jobs, agreements
+- **E-commerce** — Magento order intake, transformation, and fulfilment
+- **Marketing** — Mindbox and Sendsay customer-engagement sync
+- **Logistics** — TMS and 3PL warehouse integration
+- **Catalog** — PIM / item master-data propagation
+- **Regional** — cross-border (KZ) client and order flows
+- **Analytics** — education performance/statistics data pipeline
+- **Ops** — Telegram notifications, OpenAPI gateway, supervisor and puller services
+
+## Architecture
+
 ```
-REDIS_HOST = 'test-redis-host'
-REDIS_PORT = 6380
-REDIS_PASSWORD = 'test-redis-pass'
+   External systems (ERP/1C · CRM · Magento · Mindbox · TMS · 3PL · PIM · …)
+                    │                                   ▲
+             pull / webhook                       transform + push
+                    ▼                                   │
+        ┌───────────────────────────────────────────────────────┐
+        │                Moleculer microservices                 │
+        │  generators · transformers · request services · gateway│
+        └───────────────┬───────────────────────┬───────────────┘
+                        │  events               │  service calls / cache
+                   ┌────▼─────┐            ┌─────▼─────┐
+                   │  Kafka   │            │   Redis   │
+                   │ (@channels)│          │ transport + cache │
+                   └──────────┘            └───────────┘
+                        │
+        stores: MongoDB · MSSQL          logs: OpenSearch (pino)
 ```
-В стандартном для локального тестирования .test.env файле указаны dev кластеры kafka и redis, чтобы изменения локального запуска не подхватывались тестовой средой. При необходимости можно использовать кластеры test среды, раскомментировав необходимые параметры. 
 
-Локально можно запустить шину следующими способами:
-- запуск всех сервисов
-- запуск отдельного сервиса
-- запуск нескольких сервисов
-- запуск готовых сценариев тестирования
+- **Event backbone** — Apache Kafka via `@moleculer/channels` and `kafkajs`;
+  durable consumers, replayable topics, at-least-once delivery.
+- **Service mesh** — Moleculer services communicate over a Redis transporter with
+  a Redis cacher; each integration is an independent, individually deployable service.
+- **Pattern** — most integrations follow a *generator → transformer → request*
+  pipeline: pull/receive source data, transform to the target schema, deliver with
+  retries and idempotency.
+- **Data stores** — MongoDB and MSSQL for state and staging.
+- **API surface** — `moleculer-web` gateway with auto-generated OpenAPI docs.
+- **Scheduling** — cron-driven pullers (`moleculer-cron`) for polling upstreams.
 
-**Запуск всех сервисов**
+## Reliability & observability
 
-Осуществляется с помощью скрипта start командой `npm run start` (файл .test.env должен быть правильно заполнен)
+- **Kubernetes** deployment via Helm values per environment (dev / test / prod),
+  horizontally scaled replicas per service.
+- **GitLab CI/CD** — merge to `test` auto-deploys to staging, merge to `master`
+  auto-deploys to production; Jira-keyed feature branches.
+- **Metrics** — custom Prometheus middleware records per-action latency (gauge)
+  and message throughput (counter), surfaced in Grafana.
+- **Centralized logging** — structured `pino` logs shipped to OpenSearch for
+  cross-service tracing and error triage.
+- **Scenario tests** — the `scenario/` suite replays realistic data through a
+  chosen service chain end-to-end (e.g. order generated in ERP → delivered to CRM).
 
-**Отдельный сервис**
+## Tech stack
 
-Можно запустить, внеся изменения в start скрипт:
+Node.js · Moleculer · Apache Kafka (`@moleculer/channels`, `kafkajs`) · Redis ·
+MongoDB · MSSQL · OpenSearch · Prometheus · Grafana · Kubernetes · Helm ·
+GitLab CI/CD · Docker
 
-`SERVICEDIR= moleculer-runner --repl -E .test.env services/api.service.js`
+## Running locally
 
-**Несколько сервисов**: 
+Services run under the Moleculer runner against dev Kafka/Redis clusters
+(configured via a local `.env`):
 
-`SERVICEDIR= moleculer-runner --repl -E .test.env services/api.service.js services/puller.service.js`
+```bash
+npm install
+npm run start                      # all services
+# or a single service / chain:
+moleculer-runner --repl -E .env services/api.service.js
+```
 
-**Сценарии.**
+Ready-made end-to-end scenarios are wired up as npm scripts, e.g.:
 
-В файле package.json указаны конфигурации запуска готовых сценариев тестирования. Пример:
+```bash
+npm run scenario:incoming-orders   # puller + generator + CRM + scenario driver
+```
 
-`"scenario:incoming-orders": "SERVICEDIR= moleculer-runner --repl -E .test.env services/puller.service.js services/incoming.orders.generator.service.js services/crm.service.js scenario/incoming.orders.scenario.service.js"`
-
-В этом случае запускается сервис / связка сервисов для проверки конкретного сценария работы шины (например, генерация и отправка заказа из аксапты в crm систему).
-Сценарии тестирования находятся в папке scenario и представляют собой скрипты передачи тестовых данных в кафку шины, которые затем используются запущенной связкой сервисов.
-
-**ВАЖНО**: с момента включения опции `fromBeginning: true` на всех консьюмерах кафки шины, сначала нужно запускать связку сервисов, затем конктерный сценарий. В ином случае данные для тестирования могут не поступить в сервисы.
-
-## Мерж веток и деплой
-Деплой устроен по следующей схеме:
-1. Создаются ветки по задачам Jira (CB-100, CB-101)
-2. Ветки по задачам тестируются локально
-3. Создается мерж реквест в test ветку: https://git.prosv.ru/Architecture/enterprise-service-bus/-/merge_requests/?sort=created_date&state=all&first_page_size=20 
-
-   При мерже происходит автодеплой test среды:
-   https://git.prosv.ru/Architecture/enterprise-service-bus/-/pipelines
-4. Создается мерж реквест из test в master ветку (Release): https://git.prosv.ru/Architecture/enterprise-service-bus/-/merge_requests/?sort=created_date&state=all&first_page_size=20
-
-   При мерже происходит автодеплой prod среды:
-   https://git.prosv.ru/Architecture/enterprise-service-bus/-/pipelines
-
-## Проверка деплоя
-При мерже в test/prod ветки нужно проверять основные моменты деплоя:
-1. Проверить пайплайны - https://git.prosv.ru/Architecture/enterprise-service-bus/-/pipelines
-2. Проверить запуск контейнеров в Kubernetes на предмет рестартов подов:
-- test: https://dashboard-hw.dev.yc.prosv.ru/#/namespace?namespace=bus-dev
-- prod: https://dashboard-hw.prod.yc.prosv.ru/#/pod?namespace=bus-prod
-3. Проверить логи на предмет ошибок:
-- test: https://opensearch-dashboards.dev.yc.prosv.ru
-- prod: https://opensearch-dashboards.prod.yc.prosv.ru
-
-## Мониторинг
-При деплоях и в обычном режиме работы шины важно проверять потребления сервисов и компонентов шины.
-
-Мониторинг mongodb:
-- test: https://console.yandex.cloud/folders/b1gdda6n1cbpf6s2ntmo/managed-mongodb/cluster/c9qd5c05rupi9vnpqig4/monitoring
-- prod: https://console.yandex.cloud/folders/b1gtvpi4ur1i0rme9jjb/managed-mongodb/cluster/c9ql6a1rpv9nkl7g2jb9/monitoring
-
-Мониторинг kafka:
-- test: https://console.yandex.cloud/folders/b1gdda6n1cbpf6s2ntmo/managed-kafka/cluster/c9qh699kv6js4baomkra/monitoring
-- prod: https://console.yandex.cloud/folders/b1gq0s87ibubn5npgcrh/managed-kafka/cluster/c9qr6peanklvlmcnjand/monitoring
-
-Мониторинг redis:
-- test: https://console.yandex.cloud/folders/b1gdda6n1cbpf6s2ntmo/managed-redis/cluster/c9qjmgvevv84cqu6t85c/monitoring
-- prod: https://console.yandex.cloud/folders/b1gq0s87ibubn5npgcrh/managed-redis/cluster/c9qdug1ksqpn0pvs6f29/monitoring
-
-Мониторинг сервисов:
-- test: https://grafana-hw.dev.yc.prosv.ru/d/85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods?orgId=1&refresh=10s&var-datasource=default&var-cluster=&var-namespace=bus-dev
-- prod: https://grafana-hw.prod.yc.prosv.ru/d/85a562078cdf77779eaa1add43ccec1e/kubernetes-compute-resources-namespace-pods?orgId=1&from=now-5d&to=now&timezone=utc&var-datasource=default&var-cluster=&var-namespace=bus-prod&refresh=10s
+> Note: with Kafka consumers set to `fromBeginning: true`, start the service
+> chain **before** the scenario driver so test data is consumed correctly.
