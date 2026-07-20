@@ -1,0 +1,8 @@
+releasePrefix: "esb"
+
+defaultImage: cr.yandex/crp13g5qet3ghamll81g/architecture/enterprise-service-bus
+defaultImageTag: master
+
+envs: {}
+
+secretEnvs: {}

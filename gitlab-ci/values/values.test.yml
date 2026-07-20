@@ -1,0 +1,975 @@
+
+deployments:
+  api:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 2
+    extraSelectorLabels:
+      app: "esb-api"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: api
+          - name: PORT
+            value: "3000"
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+
+  openapi:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-openapi"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'openapi'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        
+  supervisor:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-supervisor"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'supervisor'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+
+  kafka:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 2
+    extraSelectorLabels:
+      app: "esb-kafka"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: kafka
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        
+  crm:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-crm"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'crm'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+
+  contacts-crm:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 2
+    extraSelectorLabels:
+      app: "esb-contacts-crm"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'contacts.crm'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+
+  jobs-crm:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 2
+    extraSelectorLabels:
+      app: "esb-jobs-crm"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'jobs.crm'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        
+  leads-crm:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 2
+    extraSelectorLabels:
+      app: "esb-leads-crm"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'leads.crm'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+  
+  one-c-incoming-orders-generator:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-incoming-orders-generator"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c-incoming.orders.generator
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+  
+  one-c-incoming-orders-transformer:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-incoming-orders-transformer"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c-incoming.orders.transformer
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+
+  one-c-realization-orders-generator:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-realization-orders-generator"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c-realization.orders.generator
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+
+  one-c-realization-orders-transformer:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-realization-orders-transformer"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c-realization.orders.transformer
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  inventedition-bom-generator:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-inventedition-bom-generator"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: inventedition.bom.generator
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  magento-orders-company-transformer:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-magento-orders-company-transformer"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'magento.orders.company.transformer'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+
+  magento-orders-company-generator:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-magento-orders-company-generator"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: 'magento.orders.company.generator'
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  puller:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-puller"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: puller
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "1024Mi"
+            
+  one-c-erpuh-im:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-im"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.im
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-erpuh2-im:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh2-im"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh2.im
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-erpuh-tms:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-tms"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.tms
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-tms-erpuh:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-tms-erpuh"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.tms.erpuh
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-erpuh-eris:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-eris"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.eris
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-erpuh-pim:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-pim"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.pim
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-dzo-buh-erpuh:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-dzo-buh-erpuh"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.dzo.buh.erpuh
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-dzo-erpuh:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-dzo-erpuh"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.dzo.erpuh
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-dzo-sklad3pl:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-dzo-sklad3pl"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.dzo.sklad3pl
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-sklad3pl-dzo:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-sklad3pl-dzo"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.sklad3pl.dzo
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  one-c-erpuh-kz-clients:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-kz-clients"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.kz.clients
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+
+  one-c-erpuh-crm-clients:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-one-c-erpuh-crm-clients"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: one-c.erpuh.crm.clients
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+            
+  student-stats:
+    labels: { }
+    podLabels: { }
+    podAnnotations:
+      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+    replicas: 1
+    extraSelectorLabels:
+      app: "esb-student-stats"
+    containers:
+      - name: molecular
+        envSecrets:
+          - bus-dev-vault-secret-envs
+        env:
+          - name: SERVICES
+            value: student.stats
+        image: "{{ .Values.defaultImage }}"
+        imageTag: "{{ .Values.defaultImageTag }}"
+        resources:
+          limits:
+            memory: "256Mi"
+
+#  telegram:
+#    labels: { }
+#    podLabels: { }
+#    podAnnotations:
+#      checksum/envs: '{{ include "helpers.workload.checksum" $.Values.secretEnvs }}'
+#    replicas: 1
+#    extraSelectorLabels:
+#      app: "esb-telegram"
+#    containers:
+#      - name: molecular
+#        envSecrets:
+#          - bus-dev-vault-secret-envs
+#        env:
+#          - name: SERVICES
+#            value: telegram
+#        image: "{{ .Values.defaultImage }}"
+#        imageTag: "{{ .Values.defaultImageTag }}"
+#        resources:
+#          limits:
+#            memory: "128Mi"
+
+services:
+  api:
+    type: "NodePort"
+    ports:
+      - name: esb-api
+        protocol: TCP
+        port: 8080
+        targetPort: 3000
+    extraSelectorLabels:
+      app: esb-api
+
+  api-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-api
+
+  orders-transformer-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-orders-transformer
+
+  kafka-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-kafka
+
+  contacts-crm-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-contacts-crm
+
+  jobs-crm-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-jobs-crm
+      
+  leads-crm-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-leads-crm
+      
+  one-c-erpuh-im-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-im
+      
+  one-c-erpuh2-im-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh2-im
+      
+  one-c-erpuh-tms-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-tms
+      
+  one-c-erpuh-eris-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-eris
+      
+  one-c-erpuh-pim-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-pim
+      
+  one-c-tms-erpuh-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-tms-erpuh
+      
+  one-c-dzo-buh-erpuh-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-dzo-buh-erpuh
+      
+  one-c-dzo-erpuh-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-dzo-erpuh
+      
+  one-c-dzo-sklad3pl-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-dzo-sklad3pl
+      
+  one-c-sklad3pl-dzo-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-sklad3pl-dzo
+
+  telegram-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-telegram
+
+  one-c-erpuh-kz-clients-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-kz-clients
+
+  one-c-erpuh-crm-clients-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-erpuh-crm-clients
+
+  one-c-incoming-orders-generator-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-incoming-orders-generator
+
+  one-c-incoming-orders-transformer-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-incoming-orders-transformer
+
+  one-c-realization-orders-generator-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-realization-orders-generator
+
+  one-c-realization-orders-transformer-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+    - name: metrics
+      protocol: TCP
+      port: 3030
+    extraSelectorLabels:
+      app: esb-one-c-realization-orders-transformer
+      
+  inventedition-bom-generator-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-inventedition-bom-generator
+      
+  magento-orders-company-generator-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-magento-orders-company-generator
+
+  magento-orders-company-transformer-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-magento-orders-company-transformer
+
+  puller-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-puller
+      
+  student-stats-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-student-stats
+      
+  supervisor-metrics:
+    labels:
+      app: esb-service
+    type: "ClusterIP"
+    ports:
+      - name: metrics
+        protocol: TCP
+        port: 3030
+    extraSelectorLabels:
+      app: esb-supervisor
+
+serviceMonitors:
+  sm:
+    endpoints:
+      - port: metrics
+    extraSelectorLabels:
+      app: esb-service
+
+ingresses:
+  backend:
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    ingressClassName: ingress-nginx-int
+    extraTls:
+      - hosts:
+          - bus-test.prosv.ru
+        secretName: yc-globalsign-certificates-secret
+    hosts:
+      - hostname: bus-test.prosv.ru
+        paths:
+          - serviceName: api
+            servicePort: 8080
+
+  backend-external:
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    ingressClassName: ingress-nginx-ext
+    extraTls:
+      - hosts:
+        - bus-test.prosv.ru
+        secretName: yc-globalsign-certificates-secret
+    hosts:
+    - hostname: bus-test.prosv.ru
+      paths:
+      - serviceName: api
+        servicePort: 8080

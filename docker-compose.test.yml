@@ -1,0 +1,422 @@
+version: "3.3"
+
+services:
+
+  lab:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: lab
+    networks:
+      - internal
+    ports:
+      - 3210:3210
+
+  api:
+    restart: on-failure
+    build:
+      context: .
+    image: enterprise-service-bus
+    env_file: .test.env
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: api
+      PORT: 3000
+    networks:
+      - internal
+    ports:
+      - "80:3000"
+
+  items.transformer:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: items.transformer
+    networks:
+      - internal
+
+  kafka:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: kafka
+    networks:
+      - internal
+        
+  supervisor:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: supervisor
+    networks:
+      - internal
+
+  items.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: items.generator
+    networks:
+      - internal
+        
+  items.crm.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: items.crm.generator
+    networks:
+      - internal
+
+  incoming.orders.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: incoming.orders.generator
+    networks:
+      - internal
+
+  realization.orders.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: realization.orders.generator
+    networks:
+      - internal
+
+  agreements.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: agreements.generator
+    networks:
+      - internal
+
+  crm:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: crm
+    networks:
+      - internal
+
+  contacts.crm:
+     restart: on-failure
+     env_file: .test.env
+     build:
+       context: .
+     image: enterprise-service-bus
+     deploy:
+       resources:
+         limits:
+           memory: 256M
+       mode: replicated
+       replicas: 1
+     environment:
+       SERVICES: contacts.crm
+     networks:
+       - internal
+
+  jobs.crm:
+     restart: on-failure
+     env_file: .test.env
+     build:
+       context: .
+     image: enterprise-service-bus
+     deploy:
+       resources:
+         limits:
+           memory: 256M
+       mode: replicated
+       replicas: 1
+     environment:
+       SERVICES: jobs.crm
+     networks:
+       - internal
+
+  one-c-incoming.orders.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: one-c-incoming.orders.generator
+    networks:
+      - internal
+
+  one-c-incoming.orders.transformer:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: one-c-incoming.orders.transformer
+    networks:
+      - internal
+  
+  one-c-realization.orders.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: one-c-realization.orders.generator
+    networks:
+      - internal
+  
+  one-c-realization.orders.transformer:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: one-c-realization.orders.transformer
+    networks:
+      - internal
+      
+  one-c:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: one-c
+    networks:
+      - internal
+        
+  clients.kz.request:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: clients.kz.request
+    networks:
+      - internal
+        
+  clients.crm.request:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: clients.crm.request
+    networks:
+      - internal
+        
+  clients.kz.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: clients.kz.generator
+    networks:
+      - internal
+
+  clients.crm.generator:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: clients.crm.generator
+    networks:
+      - internal
+
+  mindbox:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 1
+    environment:
+      SERVICES: mindbox
+    networks:
+      - internal
+        
+  mindbox.mongo:
+    restart: on-failure
+    env_file: .test.env
+    build:
+      context: .
+    image: enterprise-service-bus
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+      mode: replicated
+      replicas: 2
+    environment:
+      SERVICES: mindbox.mongo
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  data:
